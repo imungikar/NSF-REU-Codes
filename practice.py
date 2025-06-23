@@ -81,8 +81,25 @@ With Brick
     .Zrange "{z0}", "{z1}"
     .Create
 End With
+
+With Transform
+    .Reset
+    .Name    "patch_{count}"        
+    .Origin       "Free"            
+    .Center       "{center_x}", "{center_y}", "{center_z}"    
+    .Angle        "0", "0", "45"    
+    .MultipleObjects "False"
+    .GroupObjects "False"
+    .Repetitions "1"
+    .MultipleSelection "False"
+    .AutoDestination "True"
+    .Transform "Shape", "Rotate"
+    .Execute
+End With
+
 """)
             count += 1
 
 pixel_history_list = "\n".join(pixelHistory)
-prj.model3d.add_to_history("Random pixel bricks", pixel_history_list)
+print(pixelHistory)
+prj.model3d.add_to_history("patches between set corners", pixel_history_list)
