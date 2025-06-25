@@ -82,23 +82,183 @@ With Brick
     .Create
 End With
 
-With Transform
-    .Reset
-    .Name    "patch_{count}"        
-    .Origin       "Free"            
-    .Center       "{center_x}", "{center_y}", "{center_z}"    
-    .Angle        "0", "0", "45"    
-    .MultipleObjects "False"
-    .GroupObjects "False"
-    .Repetitions "1"
-    .MultipleSelection "False"
-    .AutoDestination "True"
-    .Transform "Shape", "Rotate"
-    .Execute
+SelectTreeItem "Components\\pixels\\patch_{count}"
+
+With Transform 
+     .Reset 
+     .Name "pixels:patch_{count}" 
+     .Origin "Free" 
+     .Center "{center_x}", "{center_y}", "{center_z}" 
+     .Angle "0", "0", "45" 
+     .MultipleObjects "False" 
+     .GroupObjects "False" 
+     .Repetitions "1" 
+     .MultipleSelection "False" 
+     .AutoDestination "True" 
+     .Transform "Shape", "Rotate" 
 End With
 
 """)
             count += 1
+
+#unfortunately the weird diagonal part of the screipt
+
+if((matrix[11][0] == 0 and matrix[10][0] == 1)):
+    center_x = -4.8
+    center_y = 1.0
+    center_z = 0.77
+    px = patch_width/2
+    py = patch_height/2
+    x0, x1 = center_x - px, center_x + px
+    y0, y1 = center_y - py, center_y + py
+    z0, z1 = center_z, center_z+brick_depth
+    pixelHistory.append(f"""
+With Brick
+    .Reset 
+    .Name "patch_{count}" 
+    .Component "pixels" 
+    .Material "Copper (pure)"
+    .Xrange "{x0}", "{x1}"
+    .Yrange "{y0}", "{y1}"
+    .Zrange "{z0}", "{z1}"
+    .Create
+End With
+
+SelectTreeItem "Components\\pixels\\patch_{count}"
+
+With Transform 
+     .Reset 
+     .Name "pixels:patch_{count}" 
+     .Origin "Free" 
+     .Center "{center_x}", "{center_y}", "{center_z}" 
+     .Angle "0", "0", "45" 
+     .MultipleObjects "False" 
+     .GroupObjects "False" 
+     .Repetitions "1" 
+     .MultipleSelection "False" 
+     .AutoDestination "True" 
+     .Transform "Shape", "Rotate" 
+End With
+
+""")
+    count += 1
+if(matrix[20][0]==0 and matrix[21][0] == 1):
+    center_x = -4.8
+    center_y = -1.0
+    center_z = 0.77
+    px = patch_width/2
+    py = patch_height/2
+    x0, x1 = center_x - px, center_x + px
+    y0, y1 = center_y - py, center_y + py
+    z0, z1 = center_z, center_z+brick_depth
+    pixelHistory.append(f"""
+With Brick
+    .Reset 
+    .Name "patch_{count}" 
+    .Component "pixels" 
+    .Material "Copper (pure)"
+    .Xrange "{x0}", "{x1}"
+    .Yrange "{y0}", "{y1}"
+    .Zrange "{z0}", "{z1}"
+    .Create
+End With
+
+SelectTreeItem "Components\\pixels\\patch_{count}"
+
+With Transform 
+     .Reset 
+     .Name "pixels:patch_{count}" 
+     .Origin "Free" 
+     .Center "{center_x}", "{center_y}", "{center_z}" 
+     .Angle "0", "0", "45" 
+     .MultipleObjects "False" 
+     .GroupObjects "False" 
+     .Repetitions "1" 
+     .MultipleSelection "False" 
+     .AutoDestination "True" 
+     .Transform "Shape", "Rotate" 
+End With
+
+""")
+    count += 1
+if(matrix[11][47] ==0 and matrix[10][47] ==1):
+    center_x = 4.8
+    center_y = 1.0
+    center_z = 0.77
+    px = patch_width/2
+    py = patch_height/2
+    x0, x1 = center_x - px, center_x + px
+    y0, y1 = center_y - py, center_y + py
+    z0, z1 = center_z, center_z+brick_depth
+    pixelHistory.append(f"""
+With Brick
+    .Reset 
+    .Name "patch_{count}" 
+    .Component "pixels" 
+    .Material "Copper (pure)"
+    .Xrange "{x0}", "{x1}"
+    .Yrange "{y0}", "{y1}"
+    .Zrange "{z0}", "{z1}"
+    .Create
+End With
+
+SelectTreeItem "Components\\pixels\\patch_{count}"
+
+With Transform 
+     .Reset 
+     .Name "pixels:patch_{count}" 
+     .Origin "Free" 
+     .Center "{center_x}", "{center_y}", "{center_z}" 
+     .Angle "0", "0", "45" 
+     .MultipleObjects "False" 
+     .GroupObjects "False" 
+     .Repetitions "1" 
+     .MultipleSelection "False" 
+     .AutoDestination "True" 
+     .Transform "Shape", "Rotate" 
+End With
+
+""")
+    count += 1
+if(matrix[20][47] == 0 and matrix [21][47] ==1):
+    center_x = -4.8
+    center_y = -1.0
+    center_z = 0.77
+    px = patch_width/2
+    py = patch_height/2
+    x0, x1 = center_x - px, center_x + px
+    y0, y1 = center_y - py, center_y + py
+    z0, z1 = center_z, center_z+brick_depth
+    pixelHistory.append(f"""
+With Brick
+    .Reset 
+    .Name "patch_{count}" 
+    .Component "pixels" 
+    .Material "Copper (pure)"
+    .Xrange "{x0}", "{x1}"
+    .Yrange "{y0}", "{y1}"
+    .Zrange "{z0}", "{z1}"
+    .Create
+End With
+
+SelectTreeItem "Components\\pixels\\patch_{count}"
+
+With Transform 
+     .Reset 
+     .Name "pixels:patch_{count}" 
+     .Origin "Free" 
+     .Center "{center_x}", "{center_y}", "{center_z}" 
+     .Angle "0", "0", "45" 
+     .MultipleObjects "False" 
+     .GroupObjects "False" 
+     .Repetitions "1" 
+     .MultipleSelection "False" 
+     .AutoDestination "True" 
+     .Transform "Shape", "Rotate" 
+End With
+
+""")
+    count += 1
 
 pixel_history_list = "\n".join(pixelHistory)
 print(pixelHistory)
