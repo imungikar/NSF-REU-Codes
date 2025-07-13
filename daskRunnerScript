@@ -1,0 +1,58 @@
+from dask.distributed import Client, SSHCluster
+import subprocess
+import json
+import csv
+
+
+
+# ----------- DEFINE MY WORKER MACHINES ----------
+#need to find a way to see if worker uptime on a PC is particularly high or not
+
+
+
+#I will probably need to write a different script using Paramiko to successfully assess that to be the case or not
+
+hosts = [f"lab1-{str(i)}.eng.utah.edu" for i in range(1,41)]
+
+
+
+# ------- CREATE DASK SSH CLUSTER USING LIBRARY FEATURES ---------
+cluster = SSHCluster(
+    hosts,
+    connect_options={"username": "u6068690"},
+    worker_options={"nthreads": 1},     # one thread per CST run
+    scheduler_options={"port": 0, "dashboard_address": ":8787"},
+)
+client = Client(cluster)
+print("Dask dashboard running at:", client.dashboard_link)
+# ----------------------------------------------------------------
+
+
+# ------- DEFINE FUNCTIONS FOR A BATCHED SIMULATION PROCESS ---------
+def run_and_score(sim_id):
+    subprocess.run(["python3", "runSim.py", "--id", str(sim_id)],
+                   check=True)
+    subprocess.run([
+        "python3", "lossFunction.py",
+        "--id", str(sim_id),
+        "--infile", f"{sim_id}.s2p", #curious whether I need to include the full path for this
+        "--outfile", f"loss_{sim_id}.json"
+    ], check=True)
+    return json.loads(open(f"loss_{sim_id}.json").read())["loss"]
+# --------------------------------------------------------------------
+
+
+# -------- RUN 1000+ SIMULATIONS ON CLUSTER, GATHER RESULTS
+futures = [client.submit(run_and_score, sim) for sim in range(1, 1001)]
+losses = client.gather(futures)
+
+with open('losses.csv', 'w', newline ='') as newfile:
+    writer = csv.writer(newfile)
+    writer.writerow(["sim_id", "loss"])
+    for sim_id, loss in enumerate(losses, start=1):
+        writer.writerow([sim_id, loss])
+
+print("Simulations finished. Analysis done. Ready to create CRM.")
+
+
+
