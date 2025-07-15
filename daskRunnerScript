@@ -2,18 +2,40 @@ from dask.distributed import Client, SSHCluster
 import subprocess
 import json
 import csv
+import paramiko
+from concurrent.futures import ThreadPoolExecutor
 
 
 
 # ----------- DEFINE MY WORKER MACHINES ----------
 #need to find a way to see if worker uptime on a PC is particularly high or not
+USER = "u6068690"
+THRESHOLD = 8 # (?) need to ask miguel for more ways about knowing if this thing is okay or not
+possible_hosts = [f"lab1-{str(i)}.eng.utah.edu" for i in range(2,41)]
 
 
+def possible_host(host: str) -> bool:
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        client.connect(host, username=USER, timeout=5)
+        stdin, stdout, stderr = client.exec_command("uptime  | grep -oP '(?<=average:).*' | awk -F, '{ print $3 }'") #this has to be changed a little bit
+        out = stdout.read().strip()
+        uptime = int(out)
+        return uptime < THRESHOLD
+    except Exception:
+        return False
+    finally:
+        client.close()
+
+with ThreadPoolExecutor(max_workers=10) as worker_pool:
+    results = worker_pool.map(lambda h: (h, possible_host(h)), possible_hosts)
+
+hosts = [h for h, ok in results if ok]
 
 #I will probably need to write a different script using Paramiko to successfully assess that to be the case or not
 
-hosts = [f"lab1-{str(i)}.eng.utah.edu" for i in range(1,41)]
-
+# ------------------------------------------------
 
 
 # ------- CREATE DASK SSH CLUSTER USING LIBRARY FEATURES ---------
@@ -30,29 +52,30 @@ print("Dask dashboard running at:", client.dashboard_link)
 
 # ------- DEFINE FUNCTIONS FOR A BATCHED SIMULATION PROCESS ---------
 def run_and_score(sim_id):
-    subprocess.run(["python3", "runSim.py", "--id", str(sim_id)],
-                   check=True)
+    subprocess.run(["cst_design_environment", "-m", "-r", "-num-threads=8", "-project-file", r"X:\Pixelated_Filter_bARLA.cst"], #somehow I need to be able to put these files into the scratch directory of the CADE PCs...how do I do that?
+                   check=True) #fix this command to use the cst_design_environment command
     subprocess.run([
         "python3", "lossFunction.py",
         "--id", str(sim_id),
-        "--infile", f"{sim_id}.s2p", #curious whether I need to include the full path for this
-        "--outfile", f"loss_{sim_id}.json"
+        "--infile", rf"X:\b-ARLA Chip Design\Arrangements\sim_{sim_id}\touchstone.s2p", #curious whether I need to include the full path for this
+        "--outfile", rf"X:\b-ARLA Chip Design\Arrangements\sim_{sim_id}\loss_{sim_id}.json"
     ], check=True)
-    return json.loads(open(f"loss_{sim_id}.json").read())["loss"]
+    out_path = rf"X:\b-ARLA Chip Design\Arrangements\sim_{sim_id}\loss_{sim_id}.json"
+    return json.loads(open(out_path).read())["loss"]
 # --------------------------------------------------------------------
 
 
-# -------- RUN 1000+ SIMULATIONS ON CLUSTER, GATHER RESULTS
-futures = [client.submit(run_and_score, sim) for sim in range(1, 1001)]
+# -------- RUN 1000+ SIMULATIONS ON CLUSTER, GATHER RESULTS -------------
+futures = [client.submit(run_and_score, sim_id) for sim_id in range(1, 1001)]
 losses = client.gather(futures)
 
-with open('losses.csv', 'w', newline ='') as newfile:
+with open('X:\\b-ARLA Chip Design\\Arrangements\\losses.csv', 'w', newline ='') as newfile:
     writer = csv.writer(newfile)
     writer.writerow(["sim_id", "loss"])
     for sim_id, loss in enumerate(losses, start=1):
         writer.writerow([sim_id, loss])
 
 print("Simulations finished. Analysis done. Ready to create CRM.")
-
+# -----------------------------------------------------------------------
 
 
