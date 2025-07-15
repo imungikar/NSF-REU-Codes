@@ -1,0 +1,49 @@
+to-do:
+- I probably need to clean up my runSim file to make sure that all the boundaries and parameters are appropriate and the file will run successfully
+- I need to make sure that my file directory is actually clean before I do anything else - that the files are actually saving using an MCP or whatever
+- write a script that is able to create an arrangement of 1s and 0s (my CRM) before the arrangeent to Matrix file is able to run successfully
+- figure out how exactly this is going to run together (when I just press run to daskRunnerScript, does everything magically just fall into place at that point (?)
+
+
+
+
+
+
+
+questions for Miguel
+- go through code step by step
+- figure out what this SSHkey process works
+- how to pip donwload Dask o all the cade com,p[uters
+- clarify with Miguel what the solver conditions actually are
+
+
+
+
+
+
+- uptime script complete
+- with argparse through masterscript I think I can see how everything is supposed to communicate
+- I think I have a pretty good rough idea of how the SSH key thing will work - something I still want to review w Miguel now
+
+
+
+
+
+- goals for today now
+
+- store some stuff in scratch directory and keep other stuff intact
+- somehow refactorArrGen when put inside the file needs to be able to output the actual matrix and put that into a directory as well (does that macro need to be rewritten in VBA or something)
+- gpt run through of potential code compilation
+
+
+
+
+- list of things that need to be included in the CST solver
+- I need to put all my solver parameters and everything inside. that will just be part of the histroy list though, so should be all good. 
+- I need also to put inside my file a script that calls the array generator (which I should create) and creates the array contingent based on that
+
+
+done:
+- I believe that uptime actually works decently well now
+- create a script that can parse through sim_id and losses and create a general aggregate matrix 
+- also did some other sutff maybe forgot to record
