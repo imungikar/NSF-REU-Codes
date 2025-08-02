@@ -1,8 +1,7 @@
 from cst.interface import get_current_project
 import random
-import json
-import argparse
-import os
+
+#here we read into a matrix and then create the thing going on
 
 prj = get_current_project()
 
@@ -15,22 +14,22 @@ count = 0
 placed = False
 matrix = []
 
-for i in range(-24, 24):
-    row = []
-    for j in range(-16, 16):
-        if(random.random()<0.5):
-            placed = True
-        if(placed):
-            placed = False
-            row.append(1)
-            center_x = i*0.2 + 0.1
-            center_y = j*0.2 + 0.1
-            center_z = 0.77
+#matrix reading operation
+import json
+filename = f"arr_{number}.json"
+with open(filename, "r") as fin:
+    matrix = json.load(fin)
+
+for i in range(0, 48):
+    for j in range(0, 32):
+        if(matrix[i][j]==1):
+            center_x = -4.7 + 0.2*i 
+            center_y = -3.1 + 0.2*j
             wx = brick_width/2
             wy = brick_height/2
             x0, x1 = center_x-wx, center_x+wx
             y0, y1 = center_y-wy, center_y+wy
-            z0, z1 = center_z, center_z+brick_depth
+            z0, z1 = center_z-wz, center_z+wz
             appendedStringHistory.append(f"""
 With Brick
     .Reset 
@@ -42,14 +41,10 @@ With Brick
     .Zrange "{z0}", "{z1}"
     .Create
 End With
-""")
-            count += 1
-        else:
-            row.append(0)
-    matrix.append(row)
-history_list = "\n".join(appendedStringHistory)
+            """)
 
-prj.model3d.add_to_history("Random pixel bricks", history_list)
+history_list = "\n".join(appendedStringHistory)
+prj.model3d.add_to_history("create the first part of the initial arrangement", history_list)
 
 #patch adding part of the macro
 
@@ -265,16 +260,4 @@ End With
 
 pixel_history_list = "\n".join(pixelHistory)
 print(pixelHistory)
-prj.model3d.add_to_history("patches between set corners", pixel_history_list)
-
-
-second_made_dir =  f"/home/u6068690/ResearchProject/Arrangements/sim_{sim_id}"
-os.makedirs(second_made_dir, exist_ok=True)
-path=second_made_dir
-file = f"ArrangementOfArray"
-with open(os.path.join(path, file), 'w') as f:
-    for row in matrix:
-        f.write(" ".join(str(v) for v in row) + "\n")
-
-print("yay")
-
+prj.model3d.add_to_history("patches for generated arranagement", pixel_history_list)

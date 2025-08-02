@@ -3,8 +3,20 @@ import random
 import json
 import argparse
 import os
+import numpy as np
+from rich import print
+
+print("BYEBYE THIS IS RUNNING TOO")
+parser = argparse.ArgumentParser()
+parser.add_argument("--id", dest="sim_id", type=int, required=True)
+args = parser.parse_args()
+sim_id = args.sim_id
+
+pathOfArrangement  = f"/home/u6068690/ResearchProject/Arrangements/sim_{sim_id}/ArrangementOfArray"
+arr = np.loadtxt(pathOfArrangement, dtype=int)
 
 prj = get_current_project()
+history_list = prj.modeler._GetHistory()
 
 brick_width = 0.2
 brick_height = 0.2
@@ -15,16 +27,14 @@ count = 0
 placed = False
 matrix = []
 
-for i in range(-24, 24):
-    row = []
-    for j in range(-16, 16):
-        if(random.random()<0.5):
+for i in range(48):
+    for j in range(32):
+        if(arr[i, j]==1):
             placed = True
         if(placed):
             placed = False
-            row.append(1)
-            center_x = i*0.2 + 0.1
-            center_y = j*0.2 + 0.1
+            center_x = -4.7 + i*0.2
+            center_y = -3.1 + j*0.2
             center_z = 0.77
             wx = brick_width/2
             wy = brick_height/2
@@ -44,10 +54,10 @@ With Brick
 End With
 """)
             count += 1
-        else:
-            row.append(0)
-    matrix.append(row)
 history_list = "\n".join(appendedStringHistory)
+print("bricks are done")
+
+print(prj.modeler._GetHistory())
 
 prj.model3d.add_to_history("Random pixel bricks", history_list)
 
@@ -60,11 +70,11 @@ count = 0
 
 for k in range(0, 46):
     for l in range(0, 30):
-        if ((matrix[k][l]   == 1 and matrix[k+1][l+1] == 1 and
-             matrix[k+1][l] == 0 and matrix[k][l+1]   == 0)
+        if ((arr[k, l]   == 1 and arr[k+1, l+1] == 1 and
+             arr[k+1, l] == 0 and arr[k, l+1]   == 0)
          or
-            (matrix[k][l]   == 0 and matrix[k+1][l+1] == 0 and
-             matrix[k+1][l] == 1 and matrix[k][l+1]   == 1)):
+            (arr[k, l]    == 0 and arr[k+1, l+1]  == 0 and
+             arr[k+1, l]  == 1 and arr[k, l+1]    == 1)):
             center_x = -4.6 + 0.2*(k)
             center_y = -3.0 + 0.2*(l)
             center_z = 0.77
@@ -106,7 +116,7 @@ End With
 
 #unfortunately the weird diagonal part of the screipt
 
-if((matrix[0][11] == 0 and matrix[0][10] == 1)):
+if((arr[0, 11] == 0 and arr[0, 10] == 1)):
     center_x = -4.8
     center_y = -1.0
     center_z = 0.77
@@ -145,7 +155,7 @@ End With
 
 """)
     count += 1
-if(matrix[0][20]==0 and matrix[0][21] == 1):
+if(arr[0, 20]==0 and arr[0, 21] == 1):
     center_x = -4.8
     center_y = 1.0
     center_z = 0.77
@@ -184,7 +194,7 @@ End With
 
 """)
     count += 1
-if(matrix[47][11] ==0 and matrix[47][10] ==1):
+if(arr[47, 11] ==0 and arr[47, 10] ==1):
     center_x = 4.8
     center_y = -1.0
     center_z = 0.77
@@ -223,7 +233,7 @@ End With
 
 """)
     count += 1
-if(matrix[47][20] == 0 and matrix [47][21] ==1):
+if(arr[47, 20] == 0 and arr[47, 21] ==1):
     center_x = 4.8
     center_y = 1.0
     center_z = 0.77
@@ -264,17 +274,6 @@ End With
     count += 1
 
 pixel_history_list = "\n".join(pixelHistory)
-print(pixelHistory)
+print("patches are done")
 prj.model3d.add_to_history("patches between set corners", pixel_history_list)
-
-
-second_made_dir =  f"/home/u6068690/ResearchProject/Arrangements/sim_{sim_id}"
-os.makedirs(second_made_dir, exist_ok=True)
-path=second_made_dir
-file = f"ArrangementOfArray"
-with open(os.path.join(path, file), 'w') as f:
-    for row in matrix:
-        f.write(" ".join(str(v) for v in row) + "\n")
-
-print("yay")
 

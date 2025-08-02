@@ -4,8 +4,12 @@ import json
 import argparse
 import os
 
+
+
 prj = get_current_project()
 
+sim_id_param = float(prj.get_parameter("sim_id"))
+sim_id = int(sim_id_param)
 brick_width = 0.2
 brick_height = 0.2
 brick_depth = 0.03556
@@ -14,6 +18,7 @@ appendedStringHistory = []
 count = 0
 placed = False
 matrix = []
+random.seed(sim_id)
 
 for i in range(-24, 24):
     row = []
